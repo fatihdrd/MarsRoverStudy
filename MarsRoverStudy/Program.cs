@@ -11,20 +11,19 @@ namespace MarsRoverStudy
         static void Main(string[] args)
         {
             #region CreateTestData
-            string upperCoordinates = "5 5";
-            string firstRover = "1 2 N";
-            string firstRoverNav = "LMLMLMLMM";
-            string secondRover = "3 3 E";
-            string secondRoverNav = "MMRMMRMRRM";
-            string thirdRover = "3 3 S";
-            string thirdRoverNav = "MMRMMRMRRM";
-            Dictionary<string, string> listCoordinates = new Dictionary<string, string>();
-            listCoordinates.Add(firstRover, firstRoverNav);
-            listCoordinates.Add(secondRover, secondRoverNav);
-            listCoordinates.Add(thirdRover, thirdRoverNav);
-            #endregion
+            string input = "5 5\r\n" +
+                            "1 2 N\r\n" +
+                            "LMLMLMLMM\r\n" +
+                            "3 3 E\r\n" +
+                            "MMRMMRMRRM\r\n" +
+                               "1 1 W\r\n" +
+                            "MMMMMMMMM";
 
-            List<string> results = GetDirection(upperCoordinates, listCoordinates);
+            #endregion
+            string[] stringSeparators = new string[] { "\r\n" };
+            string[] lines = input.Split(stringSeparators, StringSplitOptions.None);
+          
+            List<string> results = GetDirection(lines);
 
             foreach (var item in results)
             {
@@ -32,41 +31,81 @@ namespace MarsRoverStudy
             }
             Console.ReadLine();
         }
+
         /// <summary>
-        /// rovers dictionary example: key is 3 3 E value is MMRMMRMRRM
+        /// this method takes input as array. Array's first item is upperCoordinates.
         /// </summary>
-        /// <param name="upperCoordinates"></param>
-        /// <param name="rovers"></param>
+        /// <param name="input"></param>
         /// <returns></returns>
-        public static List<string> GetDirection(string upperCoordinates, Dictionary<string, string> rovers)
+        public static List<string> GetDirection(string[] input)
         {
             List<string> results = new List<string>();
-
-            foreach (var rover in rovers)
+            string[] upperCoordinates = input[0].Split(' ');
+            for (int i = 1; i < input.Length; i+=2)
             {
                 try
                 {
-                    if (rover.Key.Split(' ').Length < 3) { Console.WriteLine("Wrong Params"); throw new Exception("RoverParams are invalid"); }
+                    if (input[i].Split(' ').Length < 3) { Console.WriteLine("Wrong Params"); throw new Exception("RoverParams are invalid"); }
+                  
+                    string rover = input[i];
+                    string roverNavigation = input[i+1];
 
-                    int roverX = Convert.ToInt32(rover.Key.Split(' ')[0]);
-                    int roverY = Convert.ToInt32(rover.Key.Split(' ')[1]);
-                    string roverLetter = rover.Key.Split(' ')[2];
+                    int roverX = Convert.ToInt32(rover.Split(' ')[0]);
+                    int roverY = Convert.ToInt32(rover.Split(' ')[1]);
+                    string roverLetter = rover.Split(' ')[2];
 
-                    char[] navigation = rover.Value.ToCharArray();
+                    char[] navigation = roverNavigation.ToCharArray();
                     foreach (var item in navigation)
                     {
                         Move(ref roverX, ref roverY, ref roverLetter, item.ToString());
                     }
-                    results.Add(roverX.ToString() + " " + roverY.ToString() + " " + roverLetter.ToString());
+                    string message = string.Empty;//if rover is out of the scope, write information message
+                    CheckState(roverX, roverY, upperCoordinates,ref message);
+                    results.Add(roverX.ToString() + " " + roverY.ToString() + " " + roverLetter.ToString()+ " "+message);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(string.Format("Exception occured on rover-->{0} ex--> {1}", rover, ex.ToString()));
+                    Console.WriteLine(string.Format("Exception occured on rover-->{0} ex--> {1}", input[i], ex.ToString()));
                 }
+               
             }
             return results;
         }
 
+        /// <summary>
+        /// this method check the state of item. item must less then upperCoordinate and bigger than lower coordinate(0,0)
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="upperCoorditanes"></param>
+        /// <param name="message"></param>
+        public static  void CheckState(int x,int y,string[] upperCoorditanes,ref string message)
+        {
+            if (x > Convert.ToInt32(upperCoorditanes[0]))
+            {
+                message+="rover x coordinate is bigger than upper x coordinate";
+            }
+            if (x < 0)
+            {
+                message+="rover x coordinate is  smaller than lower x coordinate";
+            }
+            if (y > Convert.ToInt32(upperCoorditanes[1]))
+            {
+                message+="rover y coordinate is bigger than upper y coordinate";
+            }
+            if (y < 0)
+            {
+                message+="rover y coordinate is  smaller than lower y coordinate";
+            }
+        }
+
+        /// <summary>
+        /// this method move the item by params
+        /// </summary>
+        /// <param name="roverX"></param>
+        /// <param name="roverY"></param>
+        /// <param name="roverLetter"></param>
+        /// <param name="navigationLetter"></param>
         public static void Move(ref int roverX, ref int roverY, ref string roverLetter, string navigationLetter)
         {
             switch (navigationLetter)
