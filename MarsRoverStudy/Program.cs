@@ -35,20 +35,20 @@ namespace MarsRoverStudy
         /// <summary>
         /// this method takes input as array. Array's first item is upperCoordinates.
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="lines"></param>
         /// <returns></returns>
-        public static List<string> GetDirection(string[] input)
+        public static List<string> GetDirection(string[] lines)
         {
             List<string> results = new List<string>();
-            string[] upperCoordinates = input[0].Split(' ');
-            for (int i = 1; i < input.Length; i+=2)
+            string[] upperCoordinates = lines[0].Split(' ');
+            for (int i = 1; i < lines.Length; i+=2)
             {
                 try
                 {
-                    if (input[i].Split(' ').Length < 3) { Console.WriteLine("Wrong Params"); throw new Exception("RoverParams are invalid"); }
+                    if (lines[i].Split(' ').Length < 3) { throw new Exception("RoverParams are invalid"); }
                   
-                    string rover = input[i];
-                    string roverNavigation = input[i+1];
+                    string rover = lines[i];
+                    string roverNavigation = lines[i+1];
 
                     int roverX = Convert.ToInt32(rover.Split(' ')[0]);
                     int roverY = Convert.ToInt32(rover.Split(' ')[1]);
@@ -65,7 +65,7 @@ namespace MarsRoverStudy
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(string.Format("Exception occured on rover-->{0} ex--> {1}", input[i], ex.ToString()));
+                    Console.WriteLine(string.Format("Exception occured on rover-->{0} ex--> {1}", lines[i], ex.ToString()));
                 }
                
             }
@@ -100,7 +100,7 @@ namespace MarsRoverStudy
         }
 
         /// <summary>
-        /// this method move the item by params
+        /// this method moves the item by params
         /// </summary>
         /// <param name="roverX"></param>
         /// <param name="roverY"></param>
@@ -165,7 +165,7 @@ namespace MarsRoverStudy
                     }
                     break;
                 default:
-                    throw new Exception("navigationLetter is not invalid "+ navigationLetter);
+                    throw new Exception("navigationLetter is invalid "+ navigationLetter);
             }
         }
     }
